@@ -1,0 +1,100 @@
+# 标签定义：所有数据集的器官标签映射集中在这里
+# 原则：模型只认「类别索引 0..N-1」，数据集差异全部在本文件翻译
+
+# ============================================================
+# 器官集合（organ_sets）：定义「要分割哪些器官」及其固定顺序
+#   顺序即模型输出通道顺序，一旦确定不要随意改动
+# ============================================================
+organ_sets:
+
+  # 单器官：用于快速验证链路 + 迁移学习源域
+  spleen_only:
+    classes: [spleen]
+    num_classes: 2          # 背景 + 1 器官
+
+  # 腹部 8 器官：主实验配置（文献常用对比集）
+  abdomen8:
+    classes: [spleen, liver, stomach, pancreas, right_kidney, left_kidney, aorta, postcava]
+    num_classes: 9
+
+  # 腹部 15 器官：AMOS22 全量
+  amos15:
+    classes:
+      [spleen, right_kidney, left_kidney, gallbladder, esophagus, liver,
+       stomach, aorta, postcava, pancreas, right_adrenal_gland,
+       left_adrenal_gland, duodenum, bladder, prostate_uterus]
+    num_classes: 16
+
+# ============================================================
+# 数据集 → 原始标签值 到 语义名称 的映射
+#   注意：num_classes 由 organ_set 决定，这里只做「原始值 → 名称」
+# ============================================================
+datasets:
+
+  # MSD Task09 Spleen: 前景=1
+  msd_spleen:
+    format: nifti
+    label_map:
+      1: spleen
+
+  # AMOS22 官方标签（CT/MRI 共用）
+  amos22:
+    format: nifti
+    label_map:
+      1: spleen
+      2: right_kidney
+      3: left_kidney
+      4: gallbladder
+      5: esophagus
+      6: liver
+      7: stomach
+      8: aorta
+      9: postcava
+      10: pancreas
+      11: right_adrenal_gland
+      12: left_adrenal_gland
+      13: duodenum
+      14: bladder
+      15: prostate_uterus
+
+  # TotalSegmentator: 117 类，此处只保留腹部器官子集
+  # ⚠️ 索引需在下载后依据其 class 列表核对，勿直接使用
+  total_segmentator:
+    format: nifti
+    label_map:
+      # 占位：待下载后核实
+      spleen: spleen
+      liver: liver
+      stomach: stomach
+      pancreas: pancreas
+      kidney_right: right_kidney
+      kidney_left: left_kidney
+      aorta: aorta
+      vena_cava_inferior: postcava
+
+  # 自建：由 NIfTI 转换生成的 DICOM（用于演示上传）
+  synthetic_dicom:
+    format: dicom
+    label_map:
+      1: spleen
+
+# ============================================================
+# 显示配色：固定色板，避免前后端不一致
+#   使用低饱和色，不用 jet/rainbow（伪彩失真且对色盲不友好）
+# ============================================================
+palette:
+  spleen:             [255, 107, 107]   # 珊瑚红
+  liver:              [ 78, 205, 196]   # 青绿
+  stomach:            [255, 195,  18]   # 琥珀
+  pancreas:           [160, 120, 255]   # 紫
+  right_kidney:       [ 72, 219, 251]   # 天蓝
+  left_kidney:        [ 46, 213, 115]   # 翠绿
+  aorta:              [255, 121, 198]   # 粉
+  postcava:           [100, 149, 237]   # 矢车菊蓝
+  gallbladder:        [255, 165,   0]   # 橙
+  esophagus:          [180, 180, 180]   # 灰
+  right_adrenal:      [199,  76, 255]   # 亮紫（原棕色在 CT 上发暗）
+  left_adrenal:       [255, 214,   0]   # 亮黄
+  duodenum:           [140, 200, 120]   # 黄绿
+  bladder:            [255, 220, 120]   # 淡黄
+  prostate_uterus:    [200, 160, 220]   # 淡紫

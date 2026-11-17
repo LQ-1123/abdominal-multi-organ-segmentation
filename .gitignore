@@ -1,0 +1,22 @@
+# 虚拟环境 / 工具
+.venv/
+.mimosa/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 数据集（体积大，按 HANDOVER.md 链接自行下载）
+data/
+
+# 大体积可再生产物
+outputs/web_cases/
+outputs/logs/
+
+# 训练权重（体积大，走 GitHub Release 下载，见 HANDOVER.md）
+outputs/fold*/best.pth
+outputs_v2/fold*/best.pth
+
+# 本机杂项
+*.log
+Thumbs.db
+desktop.ini
