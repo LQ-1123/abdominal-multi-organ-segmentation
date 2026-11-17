@@ -50,13 +50,18 @@ python scripts/build_cache.py --workers 6   # 重采样到 1.5mm 等向 + npy �
 
 | Release 资产 | 放回位置 | 说明 |
 |---|---|---|
-| `outputs_v2/fold0..4/best.pth` | 同名路径 | **V2 模型（主力）**，5 折 mDice 0.8056 |
-| `outputs/fold0..4/best.pth` | 同名路径 | V1 基线，mDice 0.7665（对照用，可选） |
+| `v2_fold0_best.pth` ... `v2_fold4_best.pth` | `outputs_v2/fold<k>/best.pth` | **V2 模型（主力）**，5 折 mDice 0.8056 |
+| `v1_fold0_best.pth` ... `v1_fold4_best.pth` | `outputs/fold<k>/best.pth` | V1 基线，mDice 0.7665（对照用，可选） |
 
 ```powershell
-gh release download handover --repo <owner>/abdominal-multi-organ-segmentation --pattern "*.pth"
-# 或在仓库网页 Releases 页面手动下载
+# 一键下载并放回（项目根目录执行；Release 页面的说明里也有同款命令）
+gh release download handover --repo LQ-1123/abdominal-multi-organ-segmentation
+foreach ($k in 0..4) {
+  Move-Item "v2_fold${k}_best.pth" "outputs_v2/fold$k/best.pth" -Force
+  if (Test-Path "v1_fold${k}_best.pth") { Move-Item "v1_fold${k}_best.pth" "outputs/fold$k/best.pth" -Force }
+}
 ```
+（Release 里若看到一个名为 `best.pth` 的多余文件，是上传测试残留，可忽略。）
 
 每个 `best.pth` 约 87MB（含 optimizer 状态）。**做消融实验只需 outputs_v2 的 5 个文件。**
 
