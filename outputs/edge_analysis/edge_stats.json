@@ -1,0 +1,13 @@
+{
+  "cases": 59,
+  "slice_step": 4,
+  "canny_sigma": 2.0,
+  "spearman_canny_recall_vs_dice": {
+    "rho": 0.5928571428571427,
+    "p": 0.01984642197018114
+  },
+  "spearman_sobel_mean_vs_dice": {
+    "rho": 0.6499999999999999,
+    "p": 0.008711583621912307
+  }
+}

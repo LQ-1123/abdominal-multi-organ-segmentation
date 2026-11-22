@@ -6,17 +6,27 @@ __pycache__/
 .pytest_cache/
 
 # 数据集（体积大，按 HANDOVER.md 链接自行下载）
-data/
+/data/
 
 # 大体积可再生产物
 outputs/web_cases/
 outputs/logs/
 
 # 训练权重（体积大，走 GitHub Release 下载，见 HANDOVER.md）
+/best.pth
 outputs/fold*/best.pth
 outputs_v2/fold*/best.pth
 
-# 本机杂项
+# 本机杂项与交接下载缓存
 *.log
 Thumbs.db
 desktop.ini
+.handover-*/
+
+# Colab 传输与离线推理临时产物
+.colab_tmp/
+outputs/*/pred/
+
+# 报告与 PPT 本地预览渲染产物
+报告/_ref/*.pdf
+报告/_ref/*.png

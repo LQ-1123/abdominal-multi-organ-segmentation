@@ -25,7 +25,12 @@ from __future__ import annotations
 import numpy as np
 from scipy import ndimage
 
-__all__ = ["clean_label", "component_report"]
+__all__ = ["clean_label", "component_report", "SOLID_ORGANS"]
+
+# 实质性器官：解剖上是一整块，预测里离主体很远的第二大块只可能是误判。
+# 1 脾 2 右肾 3 左肾 4 胆囊 6 肝 11 右肾上腺 12 左肾上腺 14 膀胱 15 前列腺/子宫。
+# 食管、胃、十二指肠、主动脉、下腔静脉、胰腺是管状或细长结构，预测可能断成几段，仍用相对阈值。
+SOLID_ORGANS = frozenset({1, 2, 3, 4, 6, 11, 12, 14, 15})
 
 
 def clean_label(
@@ -34,6 +39,7 @@ def clean_label(
     min_ratio: float = 0.02,
     min_voxels: int = 30,
     connectivity: int = 1,
+    largest_only: frozenset[int] | set[int] = frozenset(),
 ) -> tuple[np.ndarray, list[dict]]:
     """按连通域清理标签体。
 
@@ -43,6 +49,7 @@ def clean_label(
         min_ratio: 相对阈值——保留体积 >= 最大块 × min_ratio 的连通域
         min_voxels: 绝对阈值——无论如何都丢弃小于该体积的连通域
         connectivity: 1=面相邻(6邻域)  2=角相邻(26邻域)
+        largest_only: 这些类别只保留最大连通域（如 SOLID_ORGANS）
 
     Returns:
         (清理后的标签体, 每个器官的处理记录)
@@ -65,7 +72,7 @@ def clean_label(
         threshold = max(largest * min_ratio, float(min_voxels))
 
         keep_ids = np.nonzero(sizes >= threshold)[0] + 1
-        if len(keep_ids) == 0:              # 极端情况：保住最大块
+        if c in largest_only or len(keep_ids) == 0:   # 实质器官，或极端情况：只保最大块
             keep_ids = np.array([int(np.argmax(sizes)) + 1])
 
         keep_mask = np.isin(lab, keep_ids)

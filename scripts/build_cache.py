@@ -100,13 +100,18 @@ def main() -> int:
     ap.add_argument("--spacing", type=float, default=1.5)
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--limit", type=int, default=0, help="只处理前 N 例（0=全部）")
+    ap.add_argument("--ct-only", action="store_true", help="只处理 CT（编号 < 500）")
+    ap.add_argument("--root", type=Path, default=ROOT / "data" / "processed" / "amos22")
+    ap.add_argument("--out", type=Path, default=ROOT / "data" / "cache" / "amos22")
     args = ap.parse_args()
 
-    root = ROOT / "data" / "processed" / "amos22"
-    out_dir = ROOT / "data" / "cache" / "amos22"
+    root = args.root
+    out_dir = args.out
     out_dir.mkdir(parents=True, exist_ok=True)
 
     cases = build_case_list(root)
+    if args.ct_only:
+        cases = [c for c in cases if c.is_ct]
     if args.limit:
         cases = cases[: args.limit]
     print(f"待处理 {len(cases)} 例 -> {out_dir}  (spacing={args.spacing}mm)")
